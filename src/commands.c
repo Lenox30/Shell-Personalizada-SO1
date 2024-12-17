@@ -9,6 +9,7 @@
 #include "shell_utils.h"
 #include "signal_handlers.h"
 #include <limits.h>
+#include <dirent.h>
 
 // Variables globales
 /**
@@ -56,6 +57,7 @@ int analizar_comando(char* comando)
         ejecutar_comando_con_pipes(comando);
         return 0;
     }
+
     // Verificar si el comando es "cd"
     if (comando_base != NULL && strcmp(comando_base, "cd") == 0)
     {
@@ -69,21 +71,22 @@ int analizar_comando(char* comando)
         limpiar_pantalla(); // Llamar a la función para limpiar la pantalla
         return 0;           // Indicar que el comando fue procesado
     }
+    
     // Verificar si el comando es "echo"
     if (comando_base != NULL && strcmp(comando_base, "echo") == 0 && argumento[strlen(argumento) - 1] != '&')
     {
-
         ejecutar_echo(argumento); // Llamar a la función para imprimir el texto
         return 0;
     }
+
     // Verificar si el comando es "quit"
     if (comando_base != NULL && strcmp(comando_base, "quit") == 0)
     {
-
         EXIT = 0;           // Cambiar el valor de la variable para salir del shell
         liberar_recursos(); // Llamar a la función para liberar los recursos
         return 0;           // Indicar que el comando fue procesado
     }
+
     // Verificar si el comando es "fg"
     if (comando_base != NULL && strcmp(comando_base, "fg") == 0)
     {
@@ -91,6 +94,7 @@ int analizar_comando(char* comando)
         manejar_comando_fg(job_number);
         return 0; // Indicar que el comando fue procesado
     }
+
     // Verificar si el comando es "bg"
     if (comando_base != NULL && strcmp(comando_base, "bg") == 0)
     {
@@ -98,29 +102,44 @@ int analizar_comando(char* comando)
         manejar_comando_bg(job_number);
         return 0; // Indicar que el comando fue procesado
     }
-    // Verigicar si el comando es "start_monitor"
+
+    // Verificar si el comando es "start_monitor"
     if (comando_base != NULL && strcmp(comando_base, "start_monitor") == 0)
     {
         start_monitor(); // Llamar a la función para iniciar el monitor
         return 0;        // Indicar que el comando fue procesado
     }
-    // Verigicar si el comando es "stop_monitor"
+
+    // Verificar si el comando es "stop_monitor"
     if (comando_base != NULL && strcmp(comando_base, "stop_monitor") == 0)
     {
         stop_monitor(); // Llamar a la función para detener el monitor
         return 0;       // Indicar que el comando fue procesado
     }
+
     // Verifica si el comando es "status_monitor"
     if (comando_base != NULL && strcmp(comando_base, "status_monitor") == 0)
     {
         status_monitor(); // Llamar a la función para mostrar el estado del monitor
         return 0;         // Indicar que el comando fue procesado
     }
+
     // Verifica si el comando es "update_config"
     if (comando_base != NULL && strcmp(comando_base, "update_config") == 0)
     {
         handle_update_command(comando); // Llamar a la función para actualizar la configuración
         return 0;                       // Indicar que el comando fue procesado
+    }
+
+    // Verifica si el comando es "explorar_config"
+    if (comando_base != NULL && strcmp(comando_base, "explorar_config") == 0)
+    {
+        const char *directorio = argumento ? argumento : cwd; // Si no se pasa directorio, usar el actual
+        const char *extension = ".config"; // Usar .config como ejemplo, pero puede ser .json u otro
+
+        printf("Explorando el directorio: %s en busca de archivos '%s'\n", directorio, extension);
+        buscar_configuraciones(directorio, extension); // Llamar a la función de búsqueda
+        return 0; // Indicar que el comando fue procesado
     }
 
     // Interpretar cualquier otro comando como un programa externo
@@ -537,4 +556,45 @@ void manejar_redirecciones(char** args)
         }
         i++; // Incrementa el índice
     }
+}
+
+void buscar_configuraciones(const char *directorio, const char *extension) {
+    DIR *dir = opendir(directorio);
+    if (dir == NULL) {
+        perror("No se puede abrir el directorio");
+        return;
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        // Ignorar los directorios "." y ".."
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+
+        char ruta_completa[512];
+        snprintf(ruta_completa, sizeof(ruta_completa), "%s/%s", directorio, entry->d_name);
+
+        // Si es un directorio, hacer llamada recursiva
+        if (entry->d_type == DT_DIR) {
+            buscar_configuraciones(ruta_completa, extension);
+        } else {
+            // Comprobar si el archivo tiene la extensión especificada
+            if (strstr(entry->d_name, extension) != NULL) {
+                printf("Archivo de configuración encontrado: %s\n", ruta_completa);
+                FILE *archivo = fopen(ruta_completa, "r");
+                if (archivo) {
+                    char linea[256];
+                    printf("Contenido de %s:\n", ruta_completa);
+                    while (fgets(linea, sizeof(linea), archivo)) {
+                        printf("%s", linea);
+                    }
+                    fclose(archivo);
+                } else {
+                    perror("Error al abrir el archivo");
+                }
+            }
+        }
+    }
+    closedir(dir);
 }

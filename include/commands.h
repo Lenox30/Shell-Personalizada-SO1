@@ -192,4 +192,16 @@ void ejecutar_comando_con_pipes(char*);
  */
 void manejar_redirecciones(char**);
 
+/**
+ * @brief Explora un directorio en busca de archivos de configuración.
+ *
+ * Esta función toma un directorio y una extensión de archivo como entrada, y busca
+ * todos los archivos con la extensión especificada en el directorio dado. Para cada
+ * archivo encontrado, imprime su nombre y tamaño en bytes.
+ *
+ * @param directorio La ruta del directorio a explorar en busca de archivos de configuración.
+ * @param extension La extensión de archivo que se utilizará para buscar archivos de configuración.
+ */
+void buscar_configuraciones(const char*, const char*);
+
 #endif // COMMANDS_H
