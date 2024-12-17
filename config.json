@@ -1,0 +1,4 @@
+{
+	"sampling_interval":	5,
+	"metrics":	["disk_usage"]
+}
