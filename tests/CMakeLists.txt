@@ -8,10 +8,11 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lgcov --coverage")
 # Crear el ejecutable de pruebas
 add_executable(test_shell
     test_shell.c
-    ${CMAKE_SOURCE_DIR}/Shell-Personalizada-SO1/src/commands.c
-    ${CMAKE_SOURCE_DIR}/Shell-Personalizada-SO1/src/monitor.c
-    ${CMAKE_SOURCE_DIR}/Shell-Personalizada-SO1/src/shell_utils.c
-    ${CMAKE_SOURCE_DIR}/Shell-Personalizada-SO1/src/signal_handlers.c)
+    ../src/commands.c
+    ../src/monitor.c
+    ../src/shell_utils.c
+    ../src/signal_handlers.c
+)
 
 target_link_libraries(test_shell PRIVATE unity::unity cjson::cjson)
 
