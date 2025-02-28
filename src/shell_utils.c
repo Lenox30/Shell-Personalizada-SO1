@@ -93,13 +93,13 @@ void load_config()
         return;
     }
 
-    cJSON_AddItemToArray(metrics_array, cJSON_CreateString("First_Fit"));    // Agrega las métricas al array
-    cJSON_AddItemToArray(metrics_array, cJSON_CreateString("Best_Fit"));     // Agrega las métricas al array
-    cJSON_AddItemToArray(metrics_array, cJSON_CreateString("Worst_Fit"));    // Agrega las métricas al array
+    cJSON_AddItemToArray(metrics_array, cJSON_CreateString("First_Fit"));     // Agrega las métricas al array
+    cJSON_AddItemToArray(metrics_array, cJSON_CreateString("Best_Fit"));      // Agrega las métricas al array
+    cJSON_AddItemToArray(metrics_array, cJSON_CreateString("Worst_Fit"));     // Agrega las métricas al array
     cJSON_AddItemToArray(metrics_array, cJSON_CreateString("cpu_usage"));     // Agrega las métricas al array
     cJSON_AddItemToArray(metrics_array, cJSON_CreateString("memory_usage"));  // Agrega las métricas al array
     cJSON_AddItemToArray(metrics_array, cJSON_CreateString("network_usage")); // Agrega las métricas al array
-    
+
     cJSON_AddItemToObject(root, "metrics", metrics_array); // Agrega el array de métricas al objeto
 
     char* json_string = cJSON_Print(root); // Convierte el objeto JSON a una cadena

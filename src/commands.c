@@ -8,8 +8,8 @@
 #include "monitor.h"
 #include "shell_utils.h"
 #include "signal_handlers.h"
-#include <limits.h>
 #include <dirent.h>
+#include <limits.h>
 
 // Variables globales
 /**
@@ -71,7 +71,7 @@ int analizar_comando(char* comando)
         limpiar_pantalla(); // Llamar a la función para limpiar la pantalla
         return 0;           // Indicar que el comando fue procesado
     }
-    
+
     // Verificar si el comando es "echo"
     if (comando_base != NULL && strcmp(comando_base, "echo") == 0 && argumento[strlen(argumento) - 1] != '&')
     {
@@ -134,12 +134,12 @@ int analizar_comando(char* comando)
     // Verifica si el comando es "explorar_config"
     if (comando_base != NULL && strcmp(comando_base, "explorar_config") == 0)
     {
-        const char *directorio = argumento ? argumento : cwd; // Si no se pasa directorio, usar el actual
-        const char *extension = ".config"; // Usar .config como ejemplo, pero puede ser .json u otro
+        const char* directorio = argumento ? argumento : cwd; // Si no se pasa directorio, usar el actual
+        const char* extension = ".config";                    // Usar .config como ejemplo, pero puede ser .json u otro
 
         printf("Explorando el directorio: %s en busca de archivos '%s'\n", directorio, extension);
         buscar_configuraciones(directorio, extension); // Llamar a la función de búsqueda
-        return 0; // Indicar que el comando fue procesado
+        return 0;                                      // Indicar que el comando fue procesado
     }
 
     // Interpretar cualquier otro comando como un programa externo
@@ -558,17 +558,21 @@ void manejar_redirecciones(char** args)
     }
 }
 
-void buscar_configuraciones(const char *directorio, const char *extension) {
-    DIR *dir = opendir(directorio);
-    if (dir == NULL) {
+void buscar_configuraciones(const char* directorio, const char* extension)
+{
+    DIR* dir = opendir(directorio);
+    if (dir == NULL)
+    {
         perror("No se puede abrir el directorio");
         return;
     }
 
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL) {
+    struct dirent* entry;
+    while ((entry = readdir(dir)) != NULL)
+    {
         // Ignorar los directorios "." y ".."
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+        {
             continue;
         }
 
@@ -576,21 +580,29 @@ void buscar_configuraciones(const char *directorio, const char *extension) {
         snprintf(ruta_completa, sizeof(ruta_completa), "%s/%s", directorio, entry->d_name);
 
         // Si es un directorio, hacer llamada recursiva
-        if (entry->d_type == DT_DIR) {
+        if (entry->d_type == DT_DIR)
+        {
             buscar_configuraciones(ruta_completa, extension);
-        } else {
+        }
+        else
+        {
             // Comprobar si el archivo tiene la extensión especificada
-            if (strstr(entry->d_name, extension) != NULL) {
+            if (strstr(entry->d_name, extension) != NULL)
+            {
                 printf("Archivo de configuración encontrado: %s\n", ruta_completa);
-                FILE *archivo = fopen(ruta_completa, "r");
-                if (archivo) {
+                FILE* archivo = fopen(ruta_completa, "r");
+                if (archivo)
+                {
                     char linea[256];
                     printf("Contenido de %s:\n", ruta_completa);
-                    while (fgets(linea, sizeof(linea), archivo)) {
+                    while (fgets(linea, sizeof(linea), archivo))
+                    {
                         printf("%s", linea);
                     }
                     fclose(archivo);
-                } else {
+                }
+                else
+                {
                     perror("Error al abrir el archivo");
                 }
             }
